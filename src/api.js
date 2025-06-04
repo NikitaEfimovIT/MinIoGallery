@@ -1,7 +1,7 @@
 import s3Client from "./aws.js";
 import {DeleteObjectCommand , GetObjectCommand , ListObjectsV2Command , PutObjectCommand} from "@aws-sdk/client-s3";
 import {getSignedUrl} from "@aws-sdk/s3-request-presigner";
-
+import toast from "react-hot-toast"
 const BUCKET_NAME = "test"
 
 export const getImages = async (setImageKeys, setSignedUrls) => {
@@ -26,6 +26,8 @@ export const getImages = async (setImageKeys, setSignedUrls) => {
         setSignedUrls(urlMap)
     } catch (err) {
         console.log("Error with getting all images: ", err)
+        toast.error("Error with getting all images")
+
     }
 }
 
@@ -41,8 +43,12 @@ export const deleteImage = async (key, setImageKeys, setSignedUrls) => {
             delete copy[key];
             return copy;
         });
+        toast.success("Image was successfully deleted!")
+
     } catch (err) {
         console.error("Delete failed:", err);
+        toast.error("Error with deleting image")
+
     }
 }
 
@@ -76,8 +82,12 @@ export const putFile = async(e, existingKey=null, setImageKeys, setSignedUrls)=>
         });
         const url = await getSignedUrl(s3Client, getCmd, { expiresIn: 3600 });
         setSignedUrls((prev) => ({ ...prev, [objectKey]: url }));
+        toast.success("Image was successfully added/updated!")
+
     } catch (err) {
         console.error("Upload/Overwrite failed:", err);
+        toast.error("Error with adding/updating image")
+
     }
 }
 
